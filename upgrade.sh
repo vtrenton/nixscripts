@@ -1,7 +1,8 @@
 #!/bin/sh
-[ $(id -u) -ne 0 ] && 
+if [ $(id -u) -ne 0 ]; then 
     echo "please run as root"
     exit 1
+fi
 
 pushd /etc/nixos/
 nix flake update >/dev/null
