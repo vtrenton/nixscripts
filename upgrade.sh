@@ -1,30 +1,20 @@
 #!/bin/sh
+[ $(id -u) -ne 0 ] && 
+    echo "please run as root"
+    exit 1
 
-nix-store --query --requisites /run/current-system | cut -d '-' -f2- > /tmp/pre
 pushd /etc/nixos/
 nix flake update >/dev/null
 nixos-rebuild switch --upgrade >/dev/null
-# Number of generations to keep
+
+# Keep only the last 5 generations of the system profile
 KEEP_GENERATIONS=5
+echo "Deleting generations older than the last $KEEP_GENERATIONS..."
+sudo nix-env --delete-generations +${KEEP_GENERATIONS} --profile /nix/var/nix/profiles/system
 
-# Get list of all generations
-generations=$(nix-env --list-generations --profile /nix/var/nix/profiles/system | awk '{print $1}')
-
-# Count generations and delete older ones
-count=0
-for gen in $generations; do
-  count=$((count + 1))
-  if [[ $count -gt $KEEP_GENERATIONS ]]; then
-    echo "Deleting generation $gen"
-    sudo nix-env --delete-generations $gen --profile /nix/var/nix/profiles/system
-  fi
-done
-
-# Run garbage collection to clear deleted generations
+# Run garbage collection to remove unused files
+# Nix GC is reference aware
+# we have marked the last 5 generations with the last command so the GC wont clean it.
 sudo nix-collect-garbage -d --quiet
+
 popd
-#nix-store --query --requisites /run/current-system | cut -d '-' -f2- > /tmp/post
-#echo "CHANGES"
-#diff --color='auto' -uw /tmp/pre /tmp/post
-#rm /tmp/pre
-#rm /tmp/post
