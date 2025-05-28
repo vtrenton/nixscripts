@@ -5,8 +5,8 @@ if [ $(id -u) -ne 0 ]; then
 fi
 
 pushd /etc/nixos/ >/dev/null
-nix flake update >/dev/null
-nixos-rebuild switch --upgrade >/dev/null
+nix flake update
+nixos-rebuild switch --upgrade
 
 # collect garbage
 echo "Collecting garbage..."
