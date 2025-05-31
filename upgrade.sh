@@ -10,7 +10,7 @@ nixos-rebuild switch --upgrade
 
 # collect garbage
 echo "Collecting garbage..."
-sudo nix-collect-garbage -d --quiet
+sudo nix-collect-garbage --quiet
 
 # print out current nix generations for tracking
 echo "NixOS Generations:"
