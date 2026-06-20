@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ $(id -u) -ne 0 ]; then 
+if [ $(id -u) -ne 0 ]; then
     echo "please run as root"
     exit 1
 fi
@@ -10,10 +10,13 @@ nixos-rebuild switch --upgrade
 
 # collect garbage
 echo "Collecting garbage..."
-sudo nix-collect-garbage --quiet
+nix-collect-garbage --quiet
+
+# use nvd to give us a nice diff
+nvd diff /run/booted-system /run/current-system
 
 # print out current nix generations for tracking
 echo "NixOS Generations:"
-sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+nixos-rebuild list-generations
 
 popd >/dev/null
