@@ -8,10 +8,6 @@ pushd /etc/nixos/ >/dev/null
 nix flake update
 nixos-rebuild switch --upgrade
 
-# collect garbage
-echo "Collecting garbage..."
-nix-collect-garbage --quiet
-
 # use nvd to give us a nice diff
 nvd diff /run/booted-system /run/current-system
 
